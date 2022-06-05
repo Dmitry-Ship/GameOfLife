@@ -11,17 +11,22 @@ import (
 
 type World interface {
 	NextGeneration()
-	GetCells() [][]gameOfLife.Cell
+	GetCells() [][]*gameOfLife.Cell
 }
 
 type Game struct {
-	world  World
-	width  int
-	height int
+	world    World
+	width    int
+	height   int
+	cellSize int
 }
 
-func NewGame(world World, width int, height int) *Game {
-	return &Game{world, width, height}
+func NewGame(world World, width int, height int, cellSize int) *Game {
+	return &Game{
+		world:    world,
+		width:    width,
+		height:   height,
+		cellSize: cellSize}
 }
 
 func (g *Game) Update(screen *ebiten.Image) error {
@@ -36,7 +41,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for y := range cells {
 		for x := range cells[y] {
 			if cells[y][x].IsAlive {
-				ebitenutil.DrawRect(screen, float64(x*2), float64(y*2), 2, 2, color.White)
+				ebitenutil.DrawRect(screen, float64(x*g.cellSize), float64(y*g.cellSize), float64(g.cellSize), float64(g.cellSize), color.White)
 			}
 		}
 	}
