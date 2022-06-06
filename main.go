@@ -14,7 +14,7 @@ import (
 func main() {
 	width := 1800
 	height := 900
-	cellSize := 1
+	cellSize := 2
 	rand.Seed(time.Now().UnixNano())
 
 	world := gameOfLife.NewWorld(width/cellSize, height/cellSize)
