@@ -2,6 +2,8 @@ package main
 
 import (
 	"log"
+	"math/rand"
+	"time"
 
 	"GitHub/GameOfLife/game"
 	"GitHub/GameOfLife/gameOfLife"
@@ -12,7 +14,8 @@ import (
 func main() {
 	width := 1800
 	height := 900
-	cellSize := 2
+	cellSize := 1
+	rand.Seed(time.Now().UnixNano())
 
 	world := gameOfLife.NewWorld(width/cellSize, height/cellSize)
 	g := game.NewGame(world, height, width, cellSize)

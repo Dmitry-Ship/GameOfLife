@@ -31,44 +31,43 @@ func (c *Cell) nextState(neighbors int) {
 }
 
 type World struct {
-	cells  [][]*Cell
+	cells  [][]Cell
 	width  int
 	height int
 }
 
 func NewWorld(width, height int) *World {
-	cells := make([][]*Cell, height)
+	cells := make([][]Cell, height)
 
 	getAliveStatus := func() bool {
-		return rand.Intn(20) == 1
+		return rand.Intn(15) == 1
 	}
 
 	for y := range cells {
-		cells[y] = make([]*Cell, width)
+		cells[y] = make([]Cell, width)
 		for x := range cells[y] {
-			cells[y][x] = &Cell{IsAlive: getAliveStatus()}
+			cells[y][x] = Cell{IsAlive: getAliveStatus()}
 		}
 	}
 
 	return &World{cells, width, height}
 }
 
-func (w *World) GetCells() [][]*Cell {
+func (w *World) GetCells() [][]Cell {
 	return w.cells
 }
 
 func (w *World) NextGeneration() {
-	newCells := make([][]*Cell, w.height)
+	newCells := make([][]Cell, w.height, w.height)
 	for i := range newCells {
-		newCells[i] = make([]*Cell, w.width)
+		newCells[i] = make([]Cell, w.width, w.width)
 	}
 
 	for y := range w.cells {
-		for x := range w.cells[y] {
-			oldCell := w.cells[y][x]
+		for x, oldCell := range w.cells[y] {
 			oldNeighbors := w.getAliveNeighbors(y, x)
 
-			newCell := &Cell{IsAlive: oldCell.IsAlive}
+			newCell := Cell{IsAlive: oldCell.IsAlive}
 			newCell.nextState(oldNeighbors)
 
 			newCells[y][x] = newCell
@@ -76,7 +75,6 @@ func (w *World) NextGeneration() {
 	}
 
 	w.cells = newCells
-
 }
 
 func (w *World) getAliveNeighbors(cellY, cellX int) int {
