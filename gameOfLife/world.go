@@ -2,6 +2,7 @@ package gameOfLife
 
 import (
 	"math/rand"
+	"time"
 )
 
 type World struct {
@@ -10,11 +11,12 @@ type World struct {
 	height int
 }
 
-func NewWorld(width, height int) *World {
+func NewWorld(width, height, density int) *World {
+	rand.Seed(time.Now().UnixNano())
 	cells := make([][]Cell, height)
 
 	getAliveStatus := func() bool {
-		return rand.Intn(15) == 1
+		return rand.Intn(12-density) == 1
 	}
 
 	for y := range cells {

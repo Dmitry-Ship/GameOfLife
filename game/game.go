@@ -18,7 +18,6 @@ type Game struct {
 	world           World
 	width           int
 	height          int
-	cellSize        int
 	cellSizeFloat64 float64
 }
 
@@ -27,7 +26,6 @@ func NewGame(world World, width int, height int, cellSize int) *Game {
 		world:           world,
 		width:           width,
 		height:          height,
-		cellSize:        cellSize,
 		cellSizeFloat64: float64(cellSize),
 	}
 }
