@@ -33,31 +33,6 @@ func (w *World) GetCells() [][]Cell {
 	return w.cells
 }
 
-func (w *World) GetCellNextState(c *Cell, y, x int) Cell {
-	neighbors := w.getAliveNeighbors(y, x)
-	// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
-	if !c.IsAlive && neighbors == 3 {
-		return Cell{IsAlive: true}
-	}
-
-	// Any live cell with more than three live neighbours dies, as if by overpopulation.
-	if c.IsAlive && neighbors > 3 {
-		return Cell{IsAlive: false}
-	}
-
-	// Any live cell with fewer than two live neighbours dies, as if caused by under-population.
-	if c.IsAlive && neighbors < 2 {
-		return Cell{IsAlive: false}
-	}
-
-	// Any live cell with two or three live neighbours lives on to the next generation.
-	if c.IsAlive && (neighbors == 2 || neighbors == 3) {
-		return Cell{IsAlive: true}
-	}
-
-	return Cell{IsAlive: c.IsAlive}
-}
-
 func (w *World) NextGeneration() {
 	newCells := make([][]Cell, w.height)
 	for i := range newCells {
@@ -66,8 +41,31 @@ func (w *World) NextGeneration() {
 
 	for y := range w.cells {
 		for x, oldCell := range w.cells[y] {
+			newCell := &newCells[y][x]
+			neighbors := w.getAliveNeighbors(y, x)
+			// Any dead cell with exactly three live neighbours becomes a live cell, as if by reproduction.
+			if !oldCell.IsAlive && neighbors == 3 {
+				newCell.IsAlive = true
+				continue
+			}
 
-			newCells[y][x] = w.GetCellNextState(&oldCell, y, x)
+			// Any live cell with more than three live neighbours dies, as if by overpopulation.
+			if oldCell.IsAlive && neighbors > 3 {
+				newCell.IsAlive = false
+				continue
+			}
+
+			// Any live cell with fewer than two live neighbours dies, as if caused by under-population.
+			if oldCell.IsAlive && neighbors < 2 {
+				newCell.IsAlive = false
+				continue
+			}
+
+			// Any live cell with two or three live neighbours lives on to the next generation.
+			if oldCell.IsAlive && (neighbors == 2 || neighbors == 3) {
+				newCell.IsAlive = true
+				continue
+			}
 		}
 	}
 

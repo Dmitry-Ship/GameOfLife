@@ -1,12 +1,13 @@
 package game
 
 import (
-	"image/color"
-
 	"GitHub/GameOfLife/gameOfLife"
-
-	"github.com/hajimehoshi/ebiten"
-	"github.com/hajimehoshi/ebiten/ebitenutil"
+	"fmt"
+	"os"
+	"os/exec"
+	"runtime"
+	"strings"
+	"time"
 )
 
 type World interface {
@@ -15,41 +16,57 @@ type World interface {
 }
 
 type Game struct {
-	world           World
-	width           int
-	height          int
-	cellSizeFloat64 float64
+	world     World
+	width     int
+	height    int
+	frameRate time.Duration
 }
 
-func NewGame(world World, width int, height int, cellSize int) *Game {
+func NewGame(world World, width int, height int) *Game {
 	return &Game{
-		world:           world,
-		width:           width,
-		height:          height,
-		cellSizeFloat64: float64(cellSize),
+		world:     world,
+		width:     width,
+		height:    height,
+		frameRate: time.Second / 10, // 10 FPS
 	}
 }
 
-func (g *Game) Update(screen *ebiten.Image) error {
-	g.world.NextGeneration()
-
-	return nil
+func (g *Game) Run() error {
+	for {
+		g.Draw()
+		g.world.NextGeneration()
+		time.Sleep(g.frameRate)
+	}
 }
 
-func (g *Game) Draw(screen *ebiten.Image) {
-	cells := g.world.GetCells()
+func clearConsole() {
+	switch runtime.GOOS {
+	case "darwin", "linux":
+		cmd := exec.Command("clear")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	case "windows":
+		cmd := exec.Command("cmd", "/c", "cls")
+		cmd.Stdout = os.Stdout
+		cmd.Run()
+	}
+}
 
+func (g *Game) Draw() {
+	clearConsole()
+
+	var sb strings.Builder
+	cells := g.world.GetCells()
 	for y := range cells {
-		yFloat64 := float64(y) * g.cellSizeFloat64
-		for x, cell := range cells[y] {
-			xFloat64 := float64(x) * g.cellSizeFloat64
+		for _, cell := range cells[y] {
 			if cell.IsAlive {
-				ebitenutil.DrawRect(screen, xFloat64, yFloat64, g.cellSizeFloat64, g.cellSizeFloat64, color.White)
+				sb.WriteString("O")
+			} else {
+				sb.WriteString(" ")
 			}
 		}
+		sb.WriteString("\n")
 	}
-}
 
-func (g *Game) Layout(outsideWidth, outsideHeight int) (screenWidth, screenHeight int) {
-	return g.height, g.width
+	fmt.Print(sb.String())
 }

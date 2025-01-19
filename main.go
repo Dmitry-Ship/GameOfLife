@@ -6,14 +6,11 @@ import (
 
 	"GitHub/GameOfLife/game"
 	"GitHub/GameOfLife/gameOfLife"
-
-	"github.com/hajimehoshi/ebiten"
 )
 
 func main() {
-	width := flag.Int("width", 1800, "world width")
-	height := flag.Int("height", 900, "world height")
-	cellSize := flag.Int("cellSize", 2, "sell size")
+	width := flag.Int("width", 160, "world width")
+	height := flag.Int("height", 40, "world height")
 	density := flag.Int("density", 5, "density max: 10")
 
 	flag.Parse()
@@ -22,12 +19,10 @@ func main() {
 		*density = 10
 	}
 
-	world := gameOfLife.NewWorld(*width/(*cellSize), *height/(*cellSize), *density)
-	g := game.NewGame(world, *height, *width, *cellSize)
-	ebiten.SetWindowSize(*width, *height)
-	ebiten.SetWindowTitle("Game of life")
+	world := gameOfLife.NewWorld(*width, *height, *density)
+	g := game.NewGame(world, *width, *height)
 
-	if err := ebiten.RunGame(g); err != nil {
+	if err := g.Run(); err != nil {
 		log.Fatal(err)
 	}
 }
