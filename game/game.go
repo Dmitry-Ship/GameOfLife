@@ -3,9 +3,6 @@ package game
 import (
 	"GitHub/GameOfLife/gameOfLife"
 	"fmt"
-	"os"
-	"os/exec"
-	"runtime"
 	"strings"
 	"time"
 )
@@ -40,16 +37,9 @@ func (g *Game) Run() error {
 }
 
 func clearConsole() {
-	switch runtime.GOOS {
-	case "darwin", "linux":
-		cmd := exec.Command("clear")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	case "windows":
-		cmd := exec.Command("cmd", "/c", "cls")
-		cmd.Stdout = os.Stdout
-		cmd.Run()
-	}
+	// use ANSI escape codes which work on most terminals instead of relying
+	// on external commands like `clear` or `cls`
+	fmt.Print("\033[H\033[2J")
 }
 
 func (g *Game) Draw() {
