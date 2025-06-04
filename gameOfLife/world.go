@@ -12,6 +12,10 @@ type World struct {
 }
 
 func NewWorld(width, height, density int) *World {
+	if density >= 12 {
+		density = 11
+	}
+
 	rand.Seed(time.Now().UnixNano())
 	cells := make([][]Cell, height)
 
